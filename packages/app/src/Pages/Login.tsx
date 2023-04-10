@@ -63,6 +63,7 @@ export async function getNip05PubKey(addr: string): Promise<string> {
 }
 
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const publicKey = useSelector<RootState, HexKey | undefined>(s => s.login.publicKey);
@@ -84,6 +85,10 @@ export default function LoginPage() {
     const ret = unwrap(Artwork.at(Artwork.length * Math.random()));
     proxy(ret.link).then(a => setArt({ ...ret, link: a }));
   }, []);
+  
+  function togglePassword() {
+    setShowPassword(!showPassword);
+  }
 
   async function doLogin() {
     const insecureMsg = formatMessage({
@@ -276,15 +281,22 @@ export default function LoginPage() {
           <p dir="auto">
             <FormattedMessage defaultMessage="Your key" description="Label for key input" />
           </p>
-          <div className="flex">
-            <input
-              dir="auto"
-              type="text"
-              placeholder={formatMessage(messages.KeyPlaceholder)}
-              className="f-grow"
-              onChange={e => setKey(e.target.value)}
-            />
-          </div>
+          <div className="password-field">
+  <label>
+    <input type="checkbox" checked={showPassword} onChange={togglePassword} />
+    Show password
+  </label>
+  <div className="flex">
+    <input
+      dir="auto"
+      type={showPassword ? "text" : "password"}
+      value={key}
+      placeholder={formatMessage(messages.KeyPlaceholder)}
+      className="f-grow"
+      onChange={e => setKey(e.target.value)}
+    />
+  </div>
+</div>
           {error.length > 0 ? <b className="error">{error}</b> : null}
           <p className="login-note">
             <FormattedMessage
